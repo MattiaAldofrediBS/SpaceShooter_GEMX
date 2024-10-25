@@ -8,24 +8,43 @@ public class PlayerShip {
     private int height;
     private int lives;
 
-    //costruttore
-    PlayerShip(int startX, int startY) {}
+    // Costruttore PlayerShip
+    PlayerShip(int startX, int startY) {
+        this.x = startX;
+        this.y = startY;
+        this.width = 50;
+        this.height = 50;
+        this.lives = 3;
+    }
 
-    //per il movimento
-    void move(int dx, int dy){}
+    // Muove la navicella
+    void move(int dx, int dy){
+    }
 
-    //per istanziare un nuovo proiettile
-    Bullet shoot(){}
+    /*
 
-    //riduce di 1 il numero di vite
-    void loseLife(){}
+    // Istanzia un nuovo oggetto Bullet al centro/nord della navicella
+    Bullet shoot(){
+        return new Bullet(this.x, this.y);
+    }
 
-    //ritorna il numero di vite
+     */
+
+    // Riduce le vite
+    void loseLife(){
+        if(this.lives > 0){
+            this.lives --;
+        }else{
+            System.out.println("Game Over!");
+        }
+    }
+
+    // Ritorna il numero di vite
     int getLives(){
         return lives;
     }
 
-    //disegna la navicella
+    // Disegna la navicella
     void draw(Graphics g){}
 
 }
