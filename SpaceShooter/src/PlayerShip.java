@@ -18,7 +18,7 @@ public class PlayerShip {
     }
 
     // Muove la navicella - ok
-    void move(int dx, int bound){
+    public void move(int dx, int bound){
         x += dx;
 
         if(x < 0){
@@ -31,14 +31,14 @@ public class PlayerShip {
     /*
 
     // Istanzia un nuovo oggetto Bullet al centro/nord della navicella - ok
-    Bullet shoot(){
+    public Bullet shoot(){
         return new Bullet(this.x + width / 2, this.y);
     }
 
      */
 
     // Riduce le vite - ok
-    void loseLife(){
+    public void loseLife(){
         if(this.lives > 0){
             this.lives--;
         }else{
@@ -47,14 +47,19 @@ public class PlayerShip {
     }
 
     // Ritorna il numero di vite - ok
-    int getLives(){
+    public int getLives(){
         return lives;
     }
 
     // Disegna la navicella - ok
-    void draw(Graphics g){
+    public void draw(Graphics g){
         g.setColor(Color.BLACK); // Importo colore
         g.fillRect(x, y, width, height); // Disegno rettangolo (x e y sono in alto a sx)
+    }
+
+    // Ritorna il rettangolo della PlayerShip - ok
+    public Rectangle getBounds(){
+        return new Rectangle(x, y, width, height);
     }
 
 }
