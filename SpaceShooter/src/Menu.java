@@ -33,7 +33,7 @@ public class Menu extends JFrame {
 
         button1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                openSettings();
+                openLeaderBoard();
             }
         });
 
@@ -44,13 +44,24 @@ public class Menu extends JFrame {
         });
     }
 
-    private void startGame(){}
-    private void openSettings(){}
-    private void exitGame(){}
+    private void startGame(){
+        Game game = new Game();
+    }
+
+    private void openLeaderBoard(){
+        Leaderboard lb = new Leaderboard();
+        //lb.displayScores();
+    }
+
+    private void exitGame(){
+        System.exit(0);
+    }
 
     // Menu di gioco
     void draw(Graphics g) {}
 
-    // Gestisce gli input utente
-    void handleInput(){}
+    public static void main(String[] args) {
+        Menu menu = new Menu();
+        menu.setVisible(true);
+    }
 }
