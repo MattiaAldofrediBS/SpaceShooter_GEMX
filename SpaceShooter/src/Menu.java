@@ -31,13 +31,13 @@ public class Menu extends JFrame {
             }
         });
 
-        button1.addActionListener(new ActionListener() {
+        button2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 openLeaderBoard();
             }
         });
 
-        button1.addActionListener(new ActionListener() {
+        button3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 exitGame();
             }
