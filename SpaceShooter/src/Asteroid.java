@@ -31,7 +31,7 @@ public class Asteroid {
         return x;
     }
 
-    public int setX(int x) {
+    public void setX(int x) {
         this.x = x;
     }
 
@@ -39,7 +39,7 @@ public class Asteroid {
         return y;
     }
 
-    public int setY(int y) {
+    public void setY(int y) {
         this.y = y;
     }
 
@@ -47,7 +47,7 @@ public class Asteroid {
         return speed;
     }
 
-    public int setSpeed(int speed) {
+    public void setSpeed(int speed) {
         this.speed = speed;
     }
 
@@ -55,7 +55,7 @@ public class Asteroid {
         return size;
     }
 
-    public int setSize(int size) {
+    public void setSize(int size) {
         this.size = size;
     }
 
