@@ -28,14 +28,10 @@ public class PlayerShip {
         }
     }
 
-    /*
-
     // Istanzia un nuovo oggetto Bullet al centro/nord della navicella - ok
     public Bullet shoot(){
         return new Bullet(this.x + width / 2, this.y);
     }
-
-     */
 
     // Riduce le vite - ok
     public void loseLife(){
