@@ -2,6 +2,8 @@ import java.awt.*;
 
 public class PlayerShip {
 
+    public static final int MIN_BOUND = 0;
+    public static final int MAX_BOUND = 800;
     private int x;
     private int y;
     private int width;
@@ -19,12 +21,8 @@ public class PlayerShip {
 
     // Muove la navicella - ok
     public void move(int dx, int bound){
-        x += dx;
-
-        if(x < 0){
-            x = 0;
-        }else if(x + width > bound){
-            x = bound - width;
+        if(x + dx >=  MIN_BOUND && dx <= MAX_BOUND - width) {
+            x += dx;
         }
     }
 
@@ -42,11 +40,6 @@ public class PlayerShip {
         }
     }
 
-    // Ritorna il numero di vite - ok
-    public int getLives(){
-        return lives;
-    }
-
     // Disegna la navicella - ok
     public void draw(Graphics g){
         g.setColor(Color.BLACK); // Importo colore
@@ -58,4 +51,43 @@ public class PlayerShip {
         return new Rectangle(x, y, width, height);
     }
 
+    public int getX(){
+        return x;
+    }
+
+    public int getY(){
+        return y;
+    }
+
+    public int getWidth(){
+        return width;
+    }
+
+    public int getHeight(){
+        return height;
+    }
+
+    public int getLives(){
+        return lives;
+    }
+
+    public void setX(int x){
+        this.x = x;
+    }
+
+    public void setY(int y){
+        this.y = y;
+    }
+
+    public void setWidth(int width){
+        this.width = width;
+    }
+
+    public void setHeight(int height){
+        this.height = height;
+    }
+
+    public void setLives(int lives){
+        this.lives = lives;
+    }
 }
