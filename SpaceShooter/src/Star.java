@@ -15,7 +15,7 @@ public class Star {
 
     // Metodo per muovere la stella verso l'alto
     public void move() {
-        this.y -= speed;  // Spostamento verso l'alto (decrementa y)
+        this.y += speed;  // Spostamento verso l'alto (decrementa y)
     }
 
     // Metodo per disegnare la stella

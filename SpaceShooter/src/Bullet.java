@@ -1,3 +1,5 @@
+import java.awt.*;
+
 public class Bullet {
 
     //Variabili di istanza
@@ -14,7 +16,7 @@ public class Bullet {
         this.y = startY;
         this.speed = 5;
         this.width = 10;
-        this.height = 20;
+        this.height = 30;
         this.isActive = true;
     }
 
@@ -68,4 +70,15 @@ public class Bullet {
     public void setHeight(int height) {
         this.height = height;
     }
+
+    public void draw(Graphics g) {
+        g.setColor(Color.BLUE);
+        g.fillOval(x, y, this.width, this.height); // Disegna un cerchio per l'asteroide
+    }
+
+    // Metodo per aggiornare la posizione del proiettile
+    public void move() {
+        this.y -= speed; // Movimento verso l'alto
+    }
+
 }
