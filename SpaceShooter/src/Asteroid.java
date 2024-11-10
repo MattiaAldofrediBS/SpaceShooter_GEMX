@@ -14,7 +14,7 @@ public class Asteroid {
     public Asteroid(int startX, int startY) {
         this.x = startX;
         this.y = startY;
-        this.speed = 10;
+        this.speed =  (int)(Math.random() * 3) + 3;
         this.width = (int)(Math.random() * 20.0) + 20;
         this.height = (int)(Math.random() * 20.0) + 20;
         this.isActive = true;
