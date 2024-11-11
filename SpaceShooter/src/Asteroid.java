@@ -1,18 +1,22 @@
+import java.awt.*;
+
 public class Asteroid {
 
     //Variabili di istanza
     private int x;
     private int y;
     private int speed;
-    private int size;
+    private int width;
+    private int height;
     private boolean isActive;
 
     //Costruttore
     public Asteroid(int startX, int startY) {
         this.x = startX;
         this.y = startY;
-        this.speed = 10;
-        this.size = 5;
+        this.speed =  (int)(Math.random() * 3) + 3;
+        this.width = (int)(Math.random() * 20.0) + 20;
+        this.height = (int)(Math.random() * 20.0) + 20;
         this.isActive = true;
     }
 
@@ -51,22 +55,42 @@ public class Asteroid {
         this.speed = speed;
     }
 
-    public int getSize() {
-        return size;
+    public int getWidth() {
+        return width;
     }
 
-    public void setSize(int size) {
-        this.size = size;
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void draw(Graphics g) {
+        g.setColor(Color.RED);
+        g.fillOval(x, y, width, height); // Disegna un cerchio per l'asteroide
+    }
+
+    // Muove l'asteroide verso il basso
+    public void move() {
+        y += speed;
     }
 
     @Override
     public String toString() {
         return "Asteroid{" +
                 "x=" + x +
-                ", y=" + y +
-                ", speed=" + speed +
-                ", size=" + size +
-                ", isActive=" + isActive +
+                ", y=" + this.y +
+                ", speed=" + this.speed +
+                ", width=" + this.width +
+                ", height=" + this.height +
+                ", isActive=" + this.isActive +
                 "}";
     }
+
 }
