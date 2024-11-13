@@ -1,109 +1,140 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class Menu extends JFrame {
 
     // Costruttore del menu
     public Menu() {
-        setTitle("Game Menu"); // Titolo della finestra
-        setSize(500, 600); // Dimensioni della finestra
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Chiudi il programma quando la finestra è chiusa
-        setLocationRelativeTo(null); // Centra la finestra sullo schermo
-        getContentPane().setBackground(Color.BLACK); // Colore di sfondo della finestra
+        setTitle("Game Menu");
+        setSize(500, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        getContentPane().setBackground(Color.BLACK);
 
-        // Imposta il layout generale a BorderLayout
+        // BorderLayout come layout principale
         setLayout(new BorderLayout());
 
-        // Aggiunge i pannelli principali al frame
-        add(createTopPanel(), BorderLayout.NORTH);  // Pannello superiore (titolo)
-        add(createCenterPanel(), BorderLayout.CENTER); // Pannello centrale (immagine e istruzioni)
-        add(createButtonPanel(), BorderLayout.SOUTH); // Pannello inferiore (pulsanti)
+        // Sezione superiore: Titolo
+        add(createTopPanel(), BorderLayout.NORTH);
+
+        // Sezione centrale: Immagine e Istruzioni
+        add(createCenterPanel(), BorderLayout.CENTER);
+
+        // Sezione inferiore: Pulsanti
+        add(createButtonPanel(), BorderLayout.SOUTH);
     }
 
-    // Metodo per creare il pannello superiore con il titolo
     private JPanel createTopPanel() {
         JPanel topPanel = new JPanel();
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS)); // Layout verticale
-        topPanel.setOpaque(false); // Pannello trasparente (usa lo sfondo nero della finestra)
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+        topPanel.setOpaque(false);
 
-        // Aggiunge le etichette con il titolo del gioco
-        topPanel.add(createLabel("Game Title", new Font("SansSerif", Font.BOLD, 24))); // Titolo principale
-        topPanel.add(createLabel("Subtitle", new Font("SansSerif", Font.BOLD, 18)));   // Sottotitolo
+        // Titoli centrati
+        topPanel.add(Box.createVerticalStrut(150));
+        topPanel.add(createLabel("GEMX", "fonts/SpaceX.ttf", Font.ITALIC, 32, Color.GRAY));
+        topPanel.add(Box.createVerticalStrut(10));
+        topPanel.add(createLabel("SPACESHIP", "fonts/PressStart2P-vaV7.ttf", Font.PLAIN, 70, Color.WHITE));
+        topPanel.add(Box.createVerticalStrut(10));
+        topPanel.add(createLabel("THE GAME", "fonts/PressStart2P-vaV7.ttf", Font.PLAIN, 24, Color.WHITE));
+        topPanel.add(Box.createVerticalStrut(80));
 
         return topPanel;
     }
 
-    // Metodo per creare il pannello centrale con un'immagine e istruzioni
     private JPanel createCenterPanel() {
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setOpaque(false);
 
-        // Placeholder per l'immagine
-        JLabel imageLabel = createLabel("Place Image Here", new Font("Arial", Font.PLAIN, 14));
-        imageLabel.setPreferredSize(new Dimension(300, 150)); // Dimensione dell'immagine fittizia
+        // Istruzioni
+        centerPanel.add(createLabel("ISTRUZIONI","fonts/PressStart2P-vaV7.ttf", Font.BOLD, 14, Color.WHITE));
+        centerPanel.add(Box.createVerticalStrut(5));
+        centerPanel.add(createLabel("Guida la navicella","fonts/PressStart2P-vaV7.ttf", Font.PLAIN, 10, Color.GRAY));
+        centerPanel.add(Box.createVerticalStrut(5));
+        centerPanel.add(createLabel("evita o distruggi gli asteroidi.","fonts/PressStart2P-vaV7.ttf", Font.PLAIN, 10, Color.GRAY));
+        centerPanel.add(Box.createVerticalStrut(5));
+        centerPanel.add(createLabel("più sopravvivi, più punti guadagni.","fonts/PressStart2P-vaV7.ttf", Font.PLAIN, 10, Color.GRAY));
+        centerPanel.add(Box.createVerticalStrut(5));
+        centerPanel.add(createLabel("Buona fortuna, pilota!","fonts/PressStart2P-vaV7.ttf", Font.PLAIN, 10, Color.GRAY));
+
+        centerPanel.add(Box.createVerticalStrut(50));
+
+        // Immagine
+        ImageIcon icon = new ImageIcon("images/keyboard.png");
+        Image img = icon.getImage().getScaledInstance(250, 150, Image.SCALE_SMOOTH);
+        JLabel imageLabel = new JLabel(new ImageIcon(img));
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         centerPanel.add(imageLabel);
-
-        // Aggiunge un'area di testo con le istruzioni
-        JTextArea instructions = new JTextArea("Game Instructions:\n- Use arrow keys to move\n- Avoid obstacles\n- Collect points");
-        instructions.setFont(new Font("Arial", Font.PLAIN, 14)); // Stile del testo
-        instructions.setEditable(false); // Rende il testo non modificabile
-        instructions.setLineWrap(true); // Avvolge il testo
-        instructions.setWrapStyleWord(true); // Avvolge per parola
-        instructions.setOpaque(false); // Sfondo trasparente
-        instructions.setForeground(Color.WHITE); // Colore del testo
-        instructions.setPreferredSize(new Dimension(300, 100)); // Dimensione del box
-
-        // Aggiunge l'immagine e le istruzioni al pannello
-        centerPanel.add(Box.createVerticalStrut(10)); // Spazio tra immagine e istruzioni
-        centerPanel.add(instructions);
 
         return centerPanel;
     }
 
-    // Metodo per creare il pannello inferiore con i pulsanti
-    // Pannello inferiore con i pulsanti
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS)); // BoxLayout in verticale
-        buttonPanel.setOpaque(false); // Sfondo trasparente
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setOpaque(false);
 
-        // Aggiunge i pulsanti con le relative azioni
-        buttonPanel.add(createButton("Start Game", e -> startGame()));
-        buttonPanel.add(Box.createVerticalStrut(10)); // Spazio tra i pulsanti
-        buttonPanel.add(createButton("Leaderboard", e -> openLeaderBoard()));
-        buttonPanel.add(Box.createVerticalStrut(10)); // Spazio tra i pulsanti
-        buttonPanel.add(createButton("Exit", e -> exitGame()));
+        // Pulsanti
+        String buttonImagePath = "images/button.png";
+        buttonPanel.add(createButton("PLAY", buttonImagePath, e -> startGame()));
+        buttonPanel.add(Box.createVerticalStrut(10));
+        buttonPanel.add(createButton("LEADERBOARD", buttonImagePath, e -> openLeaderBoard()));
+        buttonPanel.add(Box.createVerticalStrut(10));
+        buttonPanel.add(createButton("EXIT", buttonImagePath, e -> exitGame()));
+        buttonPanel.add(Box.createVerticalStrut(150));
 
         return buttonPanel;
     }
 
-    // Metodo per creare un'etichetta con testo e font specifico
-    private JLabel createLabel(String text, Font font) {
-        JLabel label = new JLabel(text, SwingConstants.CENTER); // Crea l'etichetta con il testo e la centra
-        label.setFont(font); // Imposta il font (carattere) dell'etichetta
-        label.setForeground(Color.WHITE); // Imposta il colore del testo a bianco
-        label.setAlignmentX(Component.CENTER_ALIGNMENT); // Centra l'etichetta orizzontalmente
-        return label; // Ritorna l'etichetta pronta per essere aggiunta
+    private JLabel createLabel(String text, String fontPath, int style, int size, Color color) {
+        JLabel label = new JLabel(text, SwingConstants.CENTER);
+        try {
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File(fontPath)).deriveFont(style, size);
+            label.setFont(customFont);
+        } catch (Exception e) {
+            e.printStackTrace();
+            label.setFont(new Font("SansSerif", style, size)); // Fallback al font di default
+        }
+
+        label.setForeground(color);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return label;
     }
 
-    // Metodo per creare un pulsante con testo e azione specifica
-    private JButton createButton(String text, ActionListener action) {
-        JButton button = new JButton(text); // Crea un pulsante con il testo specificato
-        button.addActionListener(action); // Assegna l'azione che il pulsante dovrà eseguire
-        button.setAlignmentX(Component.CENTER_ALIGNMENT); // Centra il pulsante orizzontalmente
-        return button; // Ritorna il pulsante pronto per essere aggiunto
+    private JButton createButton(String text, String imagePath, ActionListener action) {
+        JButton button = new JButton(text);
+
+        ImageIcon icon = new ImageIcon(imagePath);
+        Image img = icon.getImage().getScaledInstance(180, 40, Image.SCALE_SMOOTH);
+        button.setIcon(new ImageIcon(img));
+
+        button.setOpaque(false);
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+
+        button.setVerticalTextPosition(SwingConstants.CENTER);
+        button.setHorizontalTextPosition(SwingConstants.CENTER);
+        try {
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/PressStart2P-vaV7.ttf")).deriveFont(Font.PLAIN, 12);
+            button.setFont(customFont);
+        } catch (Exception e) {
+            e.printStackTrace();
+            button.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        }
+        button.setForeground(Color.WHITE);
+
+        button.addActionListener(action);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return button;
     }
 
-    // Azioni dei pulsanti
     private void startGame() {
-        // Logica per avviare il gioco (es. creare una nuova finestra di gioco)
-        System.out.println("Avvio del gioco...");
+        Game game = new Game();
     }
 
     private void openLeaderBoard() {
-        // Logica per aprire la leaderboard (es. mostrare una finestra con i punteggi)
         System.out.println("Mostra la leaderboard...");
     }
 
@@ -111,11 +142,10 @@ public class Menu extends JFrame {
         System.exit(0); // Chiude l'applicazione
     }
 
-    // Metodo main per avviare l'applicazione
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            Menu menu = new Menu(); // Crea una nuova istanza del menu
-            menu.setVisible(true); // Rende visibile la finestra
+            Menu menu = new Menu();
+            menu.setVisible(true);
         });
     }
 }
