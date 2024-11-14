@@ -1,22 +1,49 @@
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Leaderboard {
-    private ArrayList<Integer> scores; // Lista dei punteggi salvati
-    private static final String SCORE_FILE = "scores.txt"; // Nome del file per il salvataggio
+public class Leaderboard extends JPanel {
+    private ArrayList<Integer> scores; // List of saved scores
+    private static final String SCORE_FILE = "scores.txt"; // File name for saving scores
+    private JPanel exitPanel;
 
-    // Strings
-    final String ERROR_LOAD_FILE = "Errore nel caricamento dei punteggi: ";
-    final String ERROR_WRITE_FILE ="Errore nel salvataggio del punteggio: ";
+    // Strings for error messages
+    final String ERROR_LOAD_FILE = "Error loading scores: ";
+    final String ERROR_WRITE_FILE = "Error saving score: ";
+
     // Constructor
     public Leaderboard() {
         scores = new ArrayList<>();
-        loadScores(); // Carica i punteggi all'avvio
+        loadScores(); // Load scores on start
+
+        setFocusable(true);  // Ensure this is called before the key listener
+        requestFocusInWindow();  // Make sure the panel has focus
+
+        // Set the background to black
+        setBackground(Color.BLACK);
+
+        // Initialize exit panel and buttons
+        exitPanel = new JPanel();
+        exitPanel.setLayout(new BoxLayout(exitPanel, BoxLayout.Y_AXIS));  // Align components vertically
+        exitPanel.setOpaque(false);  // Make the panel transparent
+
+        // Center the exitPanel within its container
+        exitPanel.setAlignmentX(Component.CENTER_ALIGNMENT);  // Horizontally center the panel
+        String buttonImagePath = "images/button.png";
+
+        // Set up exit button
+        exitPanel.add(createButton("EXIT", buttonImagePath, e -> exitGame()));
+        exitPanel.add(Box.createVerticalStrut(150));
+
+        // Add the exit panel to the leaderboard panel
+        setLayout(new BorderLayout());
+        add(exitPanel, BorderLayout.SOUTH); // Always visible at the bottom
     }
 
-    // Loads highscores file
+    // Loads high scores from the file
     public void loadScores() {
         try (BufferedReader br = new BufferedReader(new FileReader(SCORE_FILE))) {
             String line;
@@ -28,13 +55,13 @@ public class Leaderboard {
         }
     }
 
-    // Writes a new score in the file
+    // Writes a new score to the file
     public void saveScore(int score) {
-        scores.add(score); // Adds score to the list
-        Collections.sort(scores, Collections.reverseOrder()); // Dec order
+        scores.add(score); // Add score to the list
+        Collections.sort(scores, Collections.reverseOrder()); // Sort scores in descending order
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(SCORE_FILE))) {
             for (Integer s : scores) {
-                bw.write(s.toString()); // Writes the score into the file
+                bw.write(s.toString()); // Write the score to the file
                 bw.newLine();
             }
         } catch (IOException e) {
@@ -42,18 +69,104 @@ public class Leaderboard {
         }
     }
 
-    // Shows the scores
-    public void displayScores(Graphics g) {
-        g.drawString("Leaderboard:", 10, 20); // Title
-        int y = 40; // Starting Y
-        for (int i = 0; i < scores.size(); i++) {
-            g.drawString((i + 1) + ". " + scores.get(i), 10, y); // Shows
-            y += 20; // Interline
+    // Displays the scores centered on the screen
+    public void displayScores(Graphics g) throws IOException, FontFormatException {
+        g.setColor(Color.WHITE); // Set text color to white
+        String title = "Leaderboard:";
+
+        Font titleFont = null;
+        try {
+            titleFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/PressStart2P-vaV7.ttf")).deriveFont(Font.PLAIN, 35);
+        } catch (Exception e) {
+            e.printStackTrace();
+            titleFont = new Font("SansSerif", Font.PLAIN, 35);
+        }
+
+        Font scoreFont = null;
+        try {
+            scoreFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/PressStart2P-vaV7.ttf")).deriveFont(Font.PLAIN, 20);
+        } catch (Exception e) {
+            e.printStackTrace();
+            scoreFont = new Font("SansSerif", Font.PLAIN, 20);
+        }
+
+        // Set fonts for title and scores
+        g.setFont(titleFont);
+        g.drawString(title, getWidth() / 2 - g.getFontMetrics().stringWidth(title) / 2, 150); // Center title
+
+        // Draw the scores below the title
+        g.setFont(scoreFont);
+        int y = 190; // Starting Y position for scores
+        for (int i = 0; i < scores.size() || i == 15; i++) {
+            String scoreText = (i + 1) + ". " + scores.get(i);
+            g.drawString(scoreText, getWidth() / 2 - g.getFontMetrics().stringWidth(scoreText) / 2, y);
+            y += 30; // Line height
         }
     }
 
-    // Getter
+    // Getter for the scores
     public ArrayList<Integer> getScores() {
         return scores;
+    }
+
+    // Create a button with an image and an action listener
+    private JButton createButton(String text, String imagePath, ActionListener action) {
+        JButton button = new JButton(text);
+
+        ImageIcon icon = new ImageIcon(imagePath);
+        Image img = icon.getImage().getScaledInstance(200, 60, Image.SCALE_SMOOTH);
+        button.setIcon(new ImageIcon(img));
+
+        button.setOpaque(false);
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+
+        button.setVerticalTextPosition(SwingConstants.CENTER);
+        button.setHorizontalTextPosition(SwingConstants.CENTER);
+        try {
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/PressStart2P-vaV7.ttf")).deriveFont(Font.PLAIN, 12);
+            button.setFont(customFont);
+        } catch (Exception e) {
+            e.printStackTrace();
+            button.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        }
+        button.setForeground(Color.WHITE);
+
+        button.addActionListener(action);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return button;
+    }
+
+    // Exit game action
+    private void exitGame() {
+        Menu menu = new Menu();  // Assuming you have a Menu class
+        this.setVisible(false);  // Hide the current leaderboard panel
+        menu.setVisible(true);   // Show the menu
+        menu.setFocusable(true); // Ensure this is called before the key listener
+        menu.requestFocusInWindow(); // Ensure the panel has focus
+    }
+
+    // Paint component method for displaying the scores
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        try {
+            displayScores(g); // Draw leaderboard scores
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (FontFormatException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Main method to test the leaderboard
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Leaderboard");
+        Leaderboard leaderboard = new Leaderboard();
+        frame.add(leaderboard);
+        frame.setSize(800, 600);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
     }
 }

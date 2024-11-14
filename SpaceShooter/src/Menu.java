@@ -4,25 +4,25 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 public class Menu extends JFrame {
-
-    // Costruttore del menu
+    private Game game;  // Declare a Game instance to switch to the game panel
+    private Leaderboard leaderboard;
+    // Constructor for the menu
     public Menu() {
         setTitle("Game Menu");
-        setSize(500, 600);
+        setSize(1920, 1080);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        setUndecorated(true);  // Remove window decorations (e.g., title bar)
+        setResizable(false);   // Make the window non-resizable
+
         getContentPane().setBackground(Color.BLACK);
 
-        // BorderLayout come layout principale
+        // BorderLayout as the main layout
         setLayout(new BorderLayout());
 
-        // Sezione superiore: Titolo
+        // Add the menu components
         add(createTopPanel(), BorderLayout.NORTH);
-
-        // Sezione centrale: Immagine e Istruzioni
         add(createCenterPanel(), BorderLayout.CENTER);
-
-        // Sezione inferiore: Pulsanti
         add(createButtonPanel(), BorderLayout.SOUTH);
     }
 
@@ -31,7 +31,6 @@ public class Menu extends JFrame {
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
         topPanel.setOpaque(false);
 
-        // Titoli centrati
         topPanel.add(Box.createVerticalStrut(150));
         topPanel.add(createLabel("GEMX", "fonts/SpaceX.ttf", Font.ITALIC, 32, Color.GRAY));
         topPanel.add(Box.createVerticalStrut(10));
@@ -48,20 +47,19 @@ public class Menu extends JFrame {
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         centerPanel.setOpaque(false);
 
-        // Istruzioni
-        centerPanel.add(createLabel("ISTRUZIONI","fonts/PressStart2P-vaV7.ttf", Font.BOLD, 14, Color.WHITE));
+        centerPanel.add(createLabel("ISTRUZIONI", "fonts/PressStart2P-vaV7.ttf", Font.BOLD, 14, Color.WHITE));
         centerPanel.add(Box.createVerticalStrut(5));
-        centerPanel.add(createLabel("Guida la navicella","fonts/PressStart2P-vaV7.ttf", Font.PLAIN, 10, Color.GRAY));
+        centerPanel.add(createLabel("Guida la navicella", "fonts/PressStart2P-vaV7.ttf", Font.PLAIN, 10, Color.GRAY));
         centerPanel.add(Box.createVerticalStrut(5));
-        centerPanel.add(createLabel("evita o distruggi gli asteroidi.","fonts/PressStart2P-vaV7.ttf", Font.PLAIN, 10, Color.GRAY));
+        centerPanel.add(createLabel("evita o distruggi gli asteroidi.", "fonts/PressStart2P-vaV7.ttf", Font.PLAIN, 10, Color.GRAY));
         centerPanel.add(Box.createVerticalStrut(5));
-        centerPanel.add(createLabel("più sopravvivi, più punti guadagni.","fonts/PressStart2P-vaV7.ttf", Font.PLAIN, 10, Color.GRAY));
+        centerPanel.add(createLabel("più sopravvivi, più punti guadagni.", "fonts/PressStart2P-vaV7.ttf", Font.PLAIN, 10, Color.GRAY));
         centerPanel.add(Box.createVerticalStrut(5));
-        centerPanel.add(createLabel("Buona fortuna, pilota!","fonts/PressStart2P-vaV7.ttf", Font.PLAIN, 10, Color.GRAY));
+        centerPanel.add(createLabel("Buona fortuna, pilota!", "fonts/PressStart2P-vaV7.ttf", Font.PLAIN, 10, Color.GRAY));
 
         centerPanel.add(Box.createVerticalStrut(50));
 
-        // Immagine
+        // Add the image
         ImageIcon icon = new ImageIcon("images/keyboard.png");
         Image img = icon.getImage().getScaledInstance(250, 150, Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel(new ImageIcon(img));
@@ -76,7 +74,7 @@ public class Menu extends JFrame {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         buttonPanel.setOpaque(false);
 
-        // Pulsanti
+        // Buttons
         String buttonImagePath = "images/button.png";
         buttonPanel.add(createButton("PLAY", buttonImagePath, e -> startGame()));
         buttonPanel.add(Box.createVerticalStrut(10));
@@ -95,7 +93,7 @@ public class Menu extends JFrame {
             label.setFont(customFont);
         } catch (Exception e) {
             e.printStackTrace();
-            label.setFont(new Font("SansSerif", style, size)); // Fallback al font di default
+            label.setFont(new Font("SansSerif", style, size)); // Fallback to default font
         }
 
         label.setForeground(color);
@@ -131,15 +129,35 @@ public class Menu extends JFrame {
     }
 
     private void startGame() {
-        Game game = new Game();
+        // Remove all the menu components
+        getContentPane().removeAll();
+
+        // Create the Game object and add it to the content pane
+        game = new Game();
+        getContentPane().add(game, BorderLayout.CENTER);
+        game.requestFocusInWindow();  // Make sure the game can receive key events
+
+        // Revalidate and repaint the frame to refresh the UI
+        revalidate();
+        repaint();
     }
 
     private void openLeaderBoard() {
-        System.out.println("Mostra la leaderboard...");
+        // Remove all the menu components
+        getContentPane().removeAll();
+
+        // Create the Game object and add it to the content pane
+        leaderboard = new Leaderboard();
+        getContentPane().add(leaderboard, BorderLayout.CENTER);
+        leaderboard.requestFocusInWindow();  // Make sure the game can receive key events
+
+        // Revalidate and repaint the frame to refresh the UI
+        revalidate();
+        repaint();
     }
 
     private void exitGame() {
-        System.exit(0); // Chiude l'applicazione
+        System.exit(0); // Exit the application
     }
 
     public static void main(String[] args) {

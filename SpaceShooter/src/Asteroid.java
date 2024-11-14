@@ -1,4 +1,8 @@
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class Asteroid {
 
@@ -10,14 +14,23 @@ public class Asteroid {
     private int height;
     private boolean isActive;
 
+    private BufferedImage asteroidImage;  // Declare an Image variable
+    private double rotationAngle = 0;
+
     //Costruttore
     public Asteroid(int startX, int startY) {
         this.x = startX;
         this.y = startY;
         this.speed =  (int)(Math.random() * 3) + 3;
-        this.width = (int)(Math.random() * 20.0) + 20;
-        this.height = (int)(Math.random() * 20.0) + 20;
+        this.width = (int)(Math.random() * 20.0) + 70;
+        this.height = (int)(Math.random() * 20.0) + 70;
         this.isActive = true;
+
+        try {
+            this.asteroidImage = ImageIO.read(new File("images/asteroid.png"));
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     //isActive() che restituisce isActive
@@ -71,9 +84,29 @@ public class Asteroid {
         this.height = height;
     }
 
+    // Disegna l'asteroide - ok
     public void draw(Graphics g) {
-        g.setColor(Color.RED);
-        g.fillOval(x, y, width, height); // Disegna un cerchio per l'asteroide
+        if (asteroidImage != null) {
+            Graphics2D g2d = (Graphics2D) g.create();  // Create a Graphics2D object
+
+            // Translate the graphics context to the asteroid's center
+            int centerX = x + width / 2;
+            int centerY = y + height / 2;
+            g2d.translate(centerX, centerY);
+
+            // Rotate the graphics context
+            g2d.rotate(Math.toRadians(rotationAngle));
+
+            // Draw the rotated image
+            g2d.drawImage(asteroidImage, -width / 2, -height / 2, width, height, null);
+
+            // Update the rotation angle
+            rotationAngle += 2;  // Adjust for desired rotation speed
+
+            g2d.dispose();  // Dispose of the created Graphics2D object
+        } else {
+            System.out.println("Image not found!");
+        }
     }
 
     // Muove l'asteroide verso il basso

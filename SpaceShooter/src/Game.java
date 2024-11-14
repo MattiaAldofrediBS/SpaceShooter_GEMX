@@ -1,7 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -15,8 +17,10 @@ public class Game extends JPanel implements Runnable {
     private boolean gamePaused;               // Paused
     private double score;                     // Score
 
-    private static final int WIDTH = 900;      // Width
-    private static final int HEIGHT = 1080;     // Height
+    public static final int WIDTH = 1920;      // Width
+    public static final int HEIGHT = 1080;     // Height
+
+    private int movement_dx = 10;
 
     private long lastFireTime; // Last shot
     private static final long BASE_FIRE_DELAY = 1000;  // Initial delay
@@ -31,8 +35,13 @@ public class Game extends JPanel implements Runnable {
 
     private static Circle earth;
 
+    // Pause Menu Components
+    private JPanel pausePanel;
+    private JButton restartButton;
+    private JButton exitButton;
+
     public Game() {
-        playerShip = new PlayerShip(425, 900);
+        playerShip = new PlayerShip(WIDTH / 2 - playerShip.width / 2, 900);
         asteroids = new ArrayList<>();
         bullets = new ArrayList<>();
         stars = new ArrayList<>();
@@ -42,6 +51,28 @@ public class Game extends JPanel implements Runnable {
         gamePaused = false;
 
         earth = new Circle(WIDTH / 2, HEIGHT); // Create circle at spaceship position
+
+        setFocusable(true);  // Ensure this is called before the key listener
+        requestFocusInWindow();  // Make sure the panel has focus
+
+        // Initialize pause panel and buttons
+        pausePanel = new JPanel();
+        pausePanel.setLayout(new BoxLayout(pausePanel, BoxLayout.Y_AXIS));  // Align components vertically
+        pausePanel.setOpaque(false);  // Make the panel transparent
+
+        // Center the pausePanel within its container (add this code below the setOpaque)
+        pausePanel.setAlignmentX(Component.CENTER_ALIGNMENT);  // Horizontally center the panel
+        String buttonImagePath = "images/button.png";
+
+        // Set up restart button
+        pausePanel.add(Box.createVerticalStrut(600));
+        pausePanel.add(createButton("RESTART", buttonImagePath, e -> resetGame()));
+        pausePanel.add(Box.createVerticalStrut(50));
+
+        // Set up exit button
+        pausePanel.add(createButton("EXIT", buttonImagePath, e -> exitGame()));
+        pausePanel.add(Box.createVerticalStrut(150));
+
 
         addKeyListener(new KeyAdapter() {
             @Override
@@ -54,26 +85,28 @@ public class Game extends JPanel implements Runnable {
                 keyStates[e.getKeyCode()] = false;  // Key released
             }
         });
-        setFocusable(true);
 
-        new Thread(this).start(); // Start thread
-
-        JFrame gameFrame = new JFrame("Space Shooter");
-        gameFrame.setSize(WIDTH, HEIGHT); // Window size
-        gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        gameFrame.setLocationRelativeTo(null); // Center window
-        gameFrame.add(this);
-        gameFrame.setVisible(true);
+        new Thread(this).start(); // Start the game loop
     }
 
     @Override
     public void run() {
         while (gameRunning) {
             if (!gamePaused) {
-                update(); // Update
+                update(); // Update game state
                 checkCollisions(); // Check collisions
             }
-            repaint(); // Redraw
+
+            // Handle game over and pause keys
+            if (gameOver) {
+                handleGameOverKeys(); // Check if user presses 'R' to restart or 'Escape' to exit
+            }
+
+            if (!gameOver) {
+                handlePauseKeys(); // Handle pause/unpause functionality
+            }
+
+            repaint(); // Redraw the screen
             try {
                 Thread.sleep(16); // 60 FPS
             } catch (InterruptedException e) {
@@ -101,12 +134,12 @@ public class Game extends JPanel implements Runnable {
             star.move(); // Move star
         }
 
-        if (keyStates[KeyEvent.VK_LEFT]) {
-            playerShip.move(-5); // Move left
+        if (keyStates[KeyEvent.VK_LEFT] || keyStates[KeyEvent.VK_A]) {
+            playerShip.move(-movement_dx); // Move left
         }
 
-        if (keyStates[KeyEvent.VK_RIGHT]) {
-            playerShip.move(5);  // Move right
+        if (keyStates[KeyEvent.VK_RIGHT] || keyStates[KeyEvent.VK_D]) {
+            playerShip.move(movement_dx);  // Move right
         }
 
         if (keyStates[KeyEvent.VK_SPACE]) {
@@ -206,6 +239,14 @@ public class Game extends JPanel implements Runnable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        try {
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/PressStart2P-vaV7.ttf")).deriveFont(Font.PLAIN, 32);
+            g.setFont(customFont);
+        } catch (Exception e) {
+            e.printStackTrace();
+            g.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        }
+
         // Draw the start circle (if it exists)
         if (earth != null) {
             earth.draw(g); // Draw the circle as it moves up
@@ -216,42 +257,49 @@ public class Game extends JPanel implements Runnable {
         g.setColor(new Color(123, 0, 0, 230));  // Semi-transparent black background for contrast
 
         // Points of the parallelogram (define the four corners)
-        int[] xPoints = {0, 150, 200, 0}; // X coordinates of the parallelogram
-        int[] yPoints = {0, 0, 50, 50};  // Y coordinates of the parallelogram
+        int[] xPoints = {0, 300, 400, 0}; // X coordinates of the parallelogram
+        int[] yPoints = {0, 0, 100, 100};  // Y coordinates of the parallelogram
 
         // Draw the parallelogram
         g.fillPolygon(xPoints, yPoints, 4);
 
         g.setColor(Color.WHITE);
-        g.drawString("Score: " + (int) score, 10, 20); // Score display
+        g.drawString("Score: " + (int) score, 10, 50); // Score display
 
-        g.drawString("Lives: " + playerShip.getLives(), 10, 40); // Lives display
+        g.drawString("Lives: " + playerShip.getLives(), 10, 90); // Lives display
 
         playerShip.draw(g); // Draw player ship
 
         for (Asteroid asteroid : asteroids) {
-            asteroid.draw(g); // Draw asteroid
+            asteroid.draw(g);
         }
 
         for (Bullet bullet : bullets) {
-            bullet.draw(g); // Draw bullet
+            bullet.draw(g);
         }
 
         for (Star star : stars) {
-            star.draw(g); // Draw star
+            star.draw(g);
         }
 
+        // Game over screen
         if (gameOver) {
             g.setColor(Color.RED);
-            g.setFont(new Font("Arial", Font.BOLD, 40));
-            g.drawString("Game Over!", WIDTH / 2 - 100, HEIGHT / 2); // Game over screen
-            g.drawString("Score: " + (int) score, WIDTH / 2 - 60, HEIGHT / 2 + 50); // Score
+            g.drawString("Game Over!", WIDTH / 2 - 150, HEIGHT / 2); // Game over screen
+            g.drawString("Score: " + (int) score, WIDTH / 2 - 110, HEIGHT / 2 + 50); // Score
+            gamePaused = true;
+            showPauseMenu(); // Show the pause menu with restart/exit buttons
         }
 
+        // Paused state
         if (gamePaused) {
-            g.setColor(Color.YELLOW);
-            g.setFont(new Font("Arial", Font.BOLD, 50));
-            g.drawString("PAUSE", WIDTH / 2 - 100, HEIGHT / 2); // Pause screen
+            if(!gameOver){
+                g.setColor(Color.YELLOW);
+                g.drawString("PAUSED", WIDTH / 2 - 100, HEIGHT / 2); // Pause message
+            }
+            showPauseMenu(); // Show the pause menu with restart/exit buttons
+        }else{
+            remove(pausePanel);
         }
     }
 
@@ -261,14 +309,53 @@ public class Game extends JPanel implements Runnable {
             resetGame(); // Restart the game
         }
 
-        if (keyStates[KeyEvent.VK_ESCAPE]) {
-            System.exit(0); // Exit the game
+        if (keyStates[KeyEvent.VK_E]) {
+            Menu menu = new Menu();
+            this.setVisible(false);
+            menu.setVisible(true);
+            menu.setFocusable(true);  // Ensure this is called before the key listener
+            menu.requestFocusInWindow();  // Make sure the panel has focus
         }
     }
 
-    // Method to reset the game when R is pressed
+    private void showPauseMenu() {
+        // Ensure the buttons are only shown when the game is paused
+        if (!pausePanel.isAncestorOf(this)) {
+            add(pausePanel, BorderLayout.CENTER);  // Add the pause panel to the center
+            revalidate();                         // Revalidate the layout after adding
+            repaint();                            // Repaint to show the updated screen
+        }else{
+            remove(pausePanel);
+        }
+    }
+
+
+    public void handlePauseKeys() {
+        // Check if the user presses 'Escape' or 'P' to toggle the pause state
+        if (keyStates[KeyEvent.VK_ESCAPE] || keyStates[KeyEvent.VK_P]) {
+            // Toggle pause state only if the key was just pressed
+            if (!gamePaused) {
+                gamePaused = true;  // Pause the game
+            } else {
+                gamePaused = false; // Unpause the game
+            }
+
+            // Ensure we don't toggle the pause state every frame
+            keyStates[KeyEvent.VK_ESCAPE] = false;  // Reset the key state after the pause toggle
+            keyStates[KeyEvent.VK_P] = false;      // Reset the key state after the pause toggle
+        }
+    }
+
+    private void exitGame() {
+        Menu menu = new Menu();  // Assuming you have a Menu class
+        this.setVisible(false);  // Hide the current game panel
+        menu.setVisible(true);   // Show the menu
+        menu.setFocusable(true); // Ensure this is called before the key listener
+        menu.requestFocusInWindow(); // Make sure the panel has focus
+    }
+
     public void resetGame() {
-        playerShip = new PlayerShip(375, 500);
+        playerShip = new PlayerShip(WIDTH / 2 - playerShip.width / 2, 900);
         asteroids.clear();
         bullets.clear();
         stars.clear();
@@ -276,9 +363,38 @@ public class Game extends JPanel implements Runnable {
         gameRunning = true;
         gameOver = false;
         gamePaused = false;
+        earth = new Circle(WIDTH / 2, HEIGHT); // Create circle at spaceship position
     }
 
-    class Circle {
+    private JButton createButton(String text, String imagePath, ActionListener action) {
+        JButton button = new JButton(text);
+
+        ImageIcon icon = new ImageIcon(imagePath);
+        Image img = icon.getImage().getScaledInstance(200, 60, Image.SCALE_SMOOTH);
+        button.setIcon(new ImageIcon(img));
+
+        button.setOpaque(false);
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+
+        button.setVerticalTextPosition(SwingConstants.CENTER);
+        button.setHorizontalTextPosition(SwingConstants.CENTER);
+        try {
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/PressStart2P-vaV7.ttf")).deriveFont(Font.PLAIN, 12);
+            button.setFont(customFont);
+        } catch (Exception e) {
+            e.printStackTrace();
+            button.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        }
+        button.setForeground(Color.WHITE);
+
+        button.addActionListener(action);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return button;
+    }
+
+
+class Circle {
         private int x, y; // Position of the circle
         private final int RADIUS = 500; // Fixed size for the circle
 

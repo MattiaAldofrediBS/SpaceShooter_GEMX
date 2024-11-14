@@ -1,27 +1,40 @@
+import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 public class PlayerShip {
 
     public static final int MIN_BOUND = 0;
-    public static final int MAX_BOUND = 800;
+    public static final int MAX_BOUND = 1920;
     private int x;
     private int y;
-    private int width;
-    private int height;
+    public static final int width = 150;
+    public static final int height = 150;
     private int lives;
+
+    private BufferedImage shipImage;  // Declare an Image variable
 
     // Costruttore PlayerShip - ok
     PlayerShip(int startX, int startY) {
         this.x = startX;
         this.y = startY;
-        this.width = 50;
-        this.height = 50;
         this.lives = 3;
+
+
+        try {
+            this.shipImage = ImageIO.read(new File("images/spaceship.png"));
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+
     }
 
     // Muove la navicella - ok
-    public void move(int dx, int bound){
-        if(x + dx >=  MIN_BOUND && dx <= MAX_BOUND - width) {
+    public void move(int dx){
+        if(x + dx >=  MIN_BOUND && x + dx <= MAX_BOUND - width) {
             x += dx;
         }
     }
@@ -41,9 +54,14 @@ public class PlayerShip {
     }
 
     // Disegna la navicella - ok
-    public void draw(Graphics g){
-        g.setColor(Color.BLACK); // Importo colore
-        g.fillRect(x, y, width, height); // Disegno rettangolo (x e y sono in alto a sx)
+    public void draw(Graphics g) {
+        if (shipImage != null) {
+            // Scale the image to the desired width and height of the ship
+            Image scaledImage = shipImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            g.drawImage(scaledImage, x, y, null);
+        } else {
+            System.out.println("Image not found!");
+        }
     }
 
     // Ritorna il rettangolo della PlayerShip - ok
@@ -77,14 +95,6 @@ public class PlayerShip {
 
     public void setY(int y){
         this.y = y;
-    }
-
-    public void setWidth(int width){
-        this.width = width;
-    }
-
-    public void setHeight(int height){
-        this.height = height;
     }
 
     public void setLives(int lives){
