@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Leaderboard extends JPanel {
-    private ArrayList<Integer> scores; // List of saved scores
+    private ArrayList<ScoreEntry> scores; // List of saved scores and names
     private static final String SCORE_FILE = "scores.txt"; // File name for saving scores
     private JPanel exitPanel;
 
@@ -48,20 +48,25 @@ public class Leaderboard extends JPanel {
         try (BufferedReader br = new BufferedReader(new FileReader(SCORE_FILE))) {
             String line;
             while ((line = br.readLine()) != null) {
-                scores.add(Integer.parseInt(line.trim())); // Add a score
+                String[] parts = line.trim().split(",");
+                if (parts.length == 2) {
+                    String name = parts[0];
+                    int score = Integer.parseInt(parts[1]);
+                    scores.add(new ScoreEntry(name, score)); // Add score entry
+                }
             }
         } catch (IOException e) {
             System.out.println(ERROR_LOAD_FILE + e.getMessage());
         }
     }
 
-    // Writes a new score to the file
-    public void saveScore(int score) {
-        scores.add(score); // Add score to the list
-        Collections.sort(scores, Collections.reverseOrder()); // Sort scores in descending order
+    // Writes a new score and name to the file
+    public void saveScore(String name, int score) {
+        scores.add(new ScoreEntry(name, score)); // Add score entry to the list
+        Collections.sort(scores); // Sort by score in descending order
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(SCORE_FILE))) {
-            for (Integer s : scores) {
-                bw.write(s.toString()); // Write the score to the file
+            for (ScoreEntry entry : scores) {
+                bw.write(entry.getName() + "," + entry.getScore()); // Write name and score
                 bw.newLine();
             }
         } catch (IOException e) {
@@ -96,16 +101,17 @@ public class Leaderboard extends JPanel {
 
         // Draw the scores below the title
         g.setFont(scoreFont);
-        int y = 190; // Starting Y position for scores
-        for (int i = 0; i < scores.size() || i == 15; i++) {
-            String scoreText = (i + 1) + ". " + scores.get(i);
+        int y = 250; // Starting Y position for scores
+        for (int i = 0; i < scores.size() && i <= 19; i++) {
+            ScoreEntry entry = scores.get(i);
+            String scoreText = (i + 1) + ". " + entry.getName() + ": " + entry.getScore();
             g.drawString(scoreText, getWidth() / 2 - g.getFontMetrics().stringWidth(scoreText) / 2, y);
             y += 30; // Line height
         }
     }
 
     // Getter for the scores
-    public ArrayList<Integer> getScores() {
+    public ArrayList<ScoreEntry> getScores() {
         return scores;
     }
 
@@ -157,6 +163,30 @@ public class Leaderboard extends JPanel {
             throw new RuntimeException(e);
         } catch (FontFormatException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    // ScoreEntry class to hold the name and score
+    public static class ScoreEntry implements Comparable<ScoreEntry> {
+        private String name;
+        private int score;
+
+        public ScoreEntry(String name, int score) {
+            this.name = name;
+            this.score = score;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getScore() {
+            return score;
+        }
+
+        @Override
+        public int compareTo(ScoreEntry other) {
+            return Integer.compare(other.score, this.score); // Sort by score descending
         }
     }
 

@@ -13,7 +13,7 @@ public class Asteroid {
     private int width;
     private int height;
     private boolean isActive;
-
+    private boolean asteroidSpecial;
     private BufferedImage asteroidImage;  // Declare an Image variable
     private double rotationAngle = 0;
 

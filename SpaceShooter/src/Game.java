@@ -35,6 +35,10 @@ public class Game extends JPanel implements Runnable {
 
     private static Circle earth;
 
+    private String playerName = "";       // Store the player's name
+    private String currentInput = "";     // Temporary input from the user while typing
+    private boolean scoreSaved = false;
+
     // Pause Menu Components
     private JPanel pausePanel;
     private JButton restartButton;
@@ -78,6 +82,26 @@ public class Game extends JPanel implements Runnable {
             @Override
             public void keyPressed(KeyEvent e) {
                 keyStates[e.getKeyCode()] = true;  // Key pressed
+
+                // Handle input during game over (name input)
+                if (gameOver && playerName.isEmpty()) {
+                    int keyCode = e.getKeyCode();
+
+                    // Allow backspace to delete the last character
+                    if (keyCode == KeyEvent.VK_BACK_SPACE && currentInput.length() > 0) {
+                        currentInput = currentInput.substring(0, currentInput.length() - 1);
+                    }
+                    // Handle alphanumeric input for name
+                    else if (Character.isLetterOrDigit(e.getKeyChar()) || e.getKeyCode() == KeyEvent.VK_SPACE) {
+                        currentInput += e.getKeyChar();
+                    }
+
+                    // Enter key to finalize the name
+                    if (keyCode == KeyEvent.VK_ENTER && !currentInput.isEmpty()) {
+                        playerName = currentInput;  // Save the name
+                        currentInput = "";          // Clear temporary input
+                    }
+                }
             }
 
             @Override
@@ -201,9 +225,6 @@ public class Game extends JPanel implements Runnable {
                 if (playerShip.getLives() == 1) {
                     gameOver = true; // Game over
                     gameRunning = false; // Stop game
-
-                    Leaderboard lb = new Leaderboard();
-                    lb.saveScore((int) score);
                     break;
                 } else {
                     playerShip.setLives(playerShip.getLives() - 1); // Decrease lives
@@ -285,9 +306,30 @@ public class Game extends JPanel implements Runnable {
         // Game over screen
         if (gameOver) {
             g.setColor(Color.RED);
-            g.drawString("Game Over!", WIDTH / 2 - 150, HEIGHT / 2); // Game over screen
-            g.drawString("Score: " + (int) score, WIDTH / 2 - 110, HEIGHT / 2 + 50); // Score
+            g.drawString("Game Over!", WIDTH / 2 - 150, HEIGHT / 2 - 300); // Game over screen
+            g.drawString("Score: " + (int) score, WIDTH / 2 - 110, HEIGHT / 2 - 200); // Score
             gamePaused = true;
+
+            if (playerName.isEmpty()) {
+                // Ask the user to enter a name
+                g.setColor(Color.WHITE);
+                String STR_GAMEOVER_ENTER = "Enter your name (Press Enter): ";
+                g.drawString(STR_GAMEOVER_ENTER, WIDTH / 2 - 450, HEIGHT / 2);
+
+                // Draw the user's input name (if they are typing)
+                g.drawString(currentInput, WIDTH / 2 - 150, HEIGHT / 2 + 50); // Show typed name
+            } else {
+                // After the user has typed their name, display it along with the score
+                g.drawString("Name: " + playerName, WIDTH / 2 - 250, HEIGHT / 2);
+                g.drawString("Score: " + (int) score, WIDTH / 2 - 150, HEIGHT / 2 + 50);
+                // Score
+                if (!scoreSaved) {
+                    Leaderboard leaderboard = new Leaderboard();
+                    leaderboard.saveScore(playerName, (int) score);
+                    scoreSaved = true; // Mark score as saved
+                }
+            }
+
             showPauseMenu(); // Show the pause menu with restart/exit buttons
         }
 
@@ -364,6 +406,7 @@ public class Game extends JPanel implements Runnable {
         gameOver = false;
         gamePaused = false;
         earth = new Circle(WIDTH / 2, HEIGHT); // Create circle at spaceship position
+        scoreSaved = false;  // Reset the flag so the score can be saved again
     }
 
     private JButton createButton(String text, String imagePath, ActionListener action) {
