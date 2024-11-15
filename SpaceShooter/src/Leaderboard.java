@@ -35,7 +35,7 @@ public class Leaderboard extends JPanel {
         String buttonImagePath = "images/button.png";
 
         // Set up exit button
-        exitPanel.add(createButton("EXIT", buttonImagePath, e -> exitGame()));
+        exitPanel.add(createButton("EXIT", buttonImagePath, e -> exitFrame()));
         exitPanel.add(Box.createVerticalStrut(150));
 
         // Add the exit panel to the leaderboard panel
@@ -144,12 +144,15 @@ public class Leaderboard extends JPanel {
     }
 
     // Exit game action
-    private void exitGame() {
+    private void exitFrame() {
         Menu menu = new Menu();  // Assuming you have a Menu class
         this.setVisible(false);  // Hide the current leaderboard panel
         menu.setVisible(true);   // Show the menu
         menu.setFocusable(true); // Ensure this is called before the key listener
         menu.requestFocusInWindow(); // Ensure the panel has focus
+
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);  // Get the parent JFrame
+        frame.dispose();  // Close the current frame and release resources
     }
 
     // Paint component method for displaying the scores

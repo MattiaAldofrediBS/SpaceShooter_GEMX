@@ -74,7 +74,7 @@ public class Game extends JPanel implements Runnable {
         pausePanel.add(Box.createVerticalStrut(50));
 
         // Set up exit button
-        pausePanel.add(createButton("EXIT", buttonImagePath, e -> exitGame()));
+        pausePanel.add(createButton("EXIT", buttonImagePath, e -> exitFrame()));
         pausePanel.add(Box.createVerticalStrut(150));
 
 
@@ -388,12 +388,15 @@ public class Game extends JPanel implements Runnable {
         }
     }
 
-    private void exitGame() {
+    private void exitFrame() {
         Menu menu = new Menu();  // Assuming you have a Menu class
         this.setVisible(false);  // Hide the current game panel
         menu.setVisible(true);   // Show the menu
         menu.setFocusable(true); // Ensure this is called before the key listener
         menu.requestFocusInWindow(); // Make sure the panel has focus
+
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);  // Get the parent JFrame
+        frame.dispose();  // Close the current frame and release resources
     }
 
     public void resetGame() {
