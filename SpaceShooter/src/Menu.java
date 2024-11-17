@@ -76,11 +76,11 @@ public class Menu extends JFrame {
 
         // Buttons
         String buttonImagePath = "images/button.png";
-        buttonPanel.add(createButton("PLAY", buttonImagePath, e -> startGame()));
+        buttonPanel.add(createButton("GIOCA", buttonImagePath, e -> startGame()));
         buttonPanel.add(Box.createVerticalStrut(10));
-        buttonPanel.add(createButton("LEADERBOARD", buttonImagePath, e -> openLeaderBoard()));
+        buttonPanel.add(createButton("CLASSIFICA", buttonImagePath, e -> openLeaderBoard()));
         buttonPanel.add(Box.createVerticalStrut(10));
-        buttonPanel.add(createButton("EXIT", buttonImagePath, e -> exitGame()));
+        buttonPanel.add(createButton("ESCI", buttonImagePath, e -> exitGame()));
         buttonPanel.add(Box.createVerticalStrut(150));
 
         return buttonPanel;

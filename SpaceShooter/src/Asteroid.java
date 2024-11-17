@@ -15,6 +15,7 @@ public class Asteroid {
     private boolean isActive;
     private boolean asteroidSpecial;
     private BufferedImage asteroidImage;  // Declare an Image variable
+    private BufferedImage asteroidImageDeactivate;
     private double rotationAngle = 0;
 
     //Costruttore
@@ -22,12 +23,13 @@ public class Asteroid {
         this.x = startX;
         this.y = startY;
         this.speed =  (int)(Math.random() * 3) + 3;
-        this.width = (int)(Math.random() * 20.0) + 70;
+        this.width = (int)(Math.random() * 20.0) + 90;
         this.height = (int)(Math.random() * 20.0) + 70;
         this.isActive = true;
 
         try {
             this.asteroidImage = ImageIO.read(new File("images/asteroid.png"));
+            this.asteroidImageDeactivate = ImageIO.read(new File("images/explosion.png"));
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }

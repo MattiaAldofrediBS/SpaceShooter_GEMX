@@ -35,7 +35,7 @@ public class Leaderboard extends JPanel {
         String buttonImagePath = "images/button.png";
 
         // Set up exit button
-        exitPanel.add(createButton("EXIT", buttonImagePath, e -> exitFrame()));
+        exitPanel.add(createButton("RITORNA AL MENU", buttonImagePath, e -> exitFrame()));
         exitPanel.add(Box.createVerticalStrut(150));
 
         // Add the exit panel to the leaderboard panel
@@ -77,7 +77,7 @@ public class Leaderboard extends JPanel {
     // Displays the scores centered on the screen
     public void displayScores(Graphics g) throws IOException, FontFormatException {
         g.setColor(Color.WHITE); // Set text color to white
-        String title = "Leaderboard:";
+        String title = "Classifica:";
 
         Font titleFont = null;
         try {
@@ -191,15 +191,5 @@ public class Leaderboard extends JPanel {
         public int compareTo(ScoreEntry other) {
             return Integer.compare(other.score, this.score); // Sort by score descending
         }
-    }
-
-    // Main method to test the leaderboard
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Leaderboard");
-        Leaderboard leaderboard = new Leaderboard();
-        frame.add(leaderboard);
-        frame.setSize(800, 600);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
     }
 }

@@ -72,7 +72,7 @@ public class Bullet {
     }
 
     public void draw(Graphics g) {
-        g.setColor(Color.BLUE);
+        g.setColor(new Color(0, 255, 255));
         g.fillOval(x, y, this.width, this.height); // Disegna un cerchio per l'asteroide
     }
 

@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 public class Game extends JPanel implements Runnable {
     private PlayerShip playerShip;
@@ -24,7 +25,10 @@ public class Game extends JPanel implements Runnable {
 
     private long lastFireTime; // Last shot
     private static final long BASE_FIRE_DELAY = 1000;  // Initial delay
+    private static final double MIN_FIRE_DELAY = 0.6;
     private static final double FIRE_SCALE_FACTOR = 40.0;  // speed-up
+    private final int ADDITIONAL_BULLET_LEVEL_1 = 300;
+    private final int ADDITIONAL_BULLET_LEVEL_2 = 600;
 
     private boolean[] keyStates = new boolean[1024]; // Key states
 
@@ -43,6 +47,23 @@ public class Game extends JPanel implements Runnable {
     private JPanel pausePanel;
     private JButton restartButton;
     private JButton exitButton;
+
+
+    // STRINGS
+    private final String BTN_RESTART = "RICOMINCIA";
+    private final String BTN_EXIT = "RITORNA AL MENU";
+
+    private final String GUI_SCORE = "Punteggio: ";
+    private final String GUI_LIVES = "Vite: ";
+    private final String GUI_LAST_LIVE = "!! ULTIMA VITA !!";
+    private final String GUI_GAMEOVER = "Game Over!";
+    private final String GUI_INSERTSCORE = "Inserisci il nome (Premi ENTER per confermare): ";
+    private final String GUI_NAME = "Nome: ";
+    private final String GUI_PAUSED = "IN PAUSA";
+
+
+    // Images
+    private final String buttonImagePath = "images/button.png";
 
     public Game() {
         playerShip = new PlayerShip(WIDTH / 2 - playerShip.width / 2, 900);
@@ -66,15 +87,14 @@ public class Game extends JPanel implements Runnable {
 
         // Center the pausePanel within its container (add this code below the setOpaque)
         pausePanel.setAlignmentX(Component.CENTER_ALIGNMENT);  // Horizontally center the panel
-        String buttonImagePath = "images/button.png";
 
         // Set up restart button
         pausePanel.add(Box.createVerticalStrut(600));
-        pausePanel.add(createButton("RESTART", buttonImagePath, e -> resetGame()));
+        pausePanel.add(createButton(BTN_RESTART, buttonImagePath, e -> resetGame()));
         pausePanel.add(Box.createVerticalStrut(50));
 
         // Set up exit button
-        pausePanel.add(createButton("EXIT", buttonImagePath, e -> exitFrame()));
+        pausePanel.add(createButton(BTN_EXIT, buttonImagePath, e -> exitFrame()));
         pausePanel.add(Box.createVerticalStrut(150));
 
 
@@ -121,10 +141,6 @@ public class Game extends JPanel implements Runnable {
                 checkCollisions(); // Check collisions
             }
 
-            // Handle game over and pause keys
-            if (gameOver) {
-                handleGameOverKeys(); // Check if user presses 'R' to restart or 'Escape' to exit
-            }
 
             if (!gameOver) {
                 handlePauseKeys(); // Handle pause/unpause functionality
@@ -210,11 +226,18 @@ public class Game extends JPanel implements Runnable {
         long currentTime = System.currentTimeMillis();
 
         // Calculate fire delay based on score
-        double fireDelay = BASE_FIRE_DELAY; // / (1 + (score / FIRE_SCALE_FACTOR));
+        double fireDelay =  BASE_FIRE_DELAY / (1 + ((score / 100) / FIRE_SCALE_FACTOR)); //BASE_FIRE_DELAY;
+        double minFireDelay = MIN_FIRE_DELAY; // Your desired minimum fire delay
 
+        fireDelay = Math.max(fireDelay, minFireDelay);
         if (currentTime - lastFireTime >= fireDelay) {
-            Bullet bullet = new Bullet(playerShip.getX() + playerShip.getWidth() / 2 - 2, playerShip.getY());
-            bullets.add(bullet);
+            bullets.add(new Bullet(playerShip.getX() + playerShip.getWidth() / 2 - 4, playerShip.getY())); // Middle
+            if (score > ADDITIONAL_BULLET_LEVEL_1) {
+                bullets.add(new Bullet(playerShip.getX() + playerShip.getWidth(), playerShip.getY() + playerShip.getHeight() / 2 - 4)); // Right
+            }
+            if (score > ADDITIONAL_BULLET_LEVEL_2) {
+                bullets.add(new Bullet(playerShip.getX(), playerShip.getY() + playerShip.getHeight() / 2 - 4)); // Left
+            }
             lastFireTime = currentTime;  // Update the last fire time
         }
     }
@@ -229,6 +252,7 @@ public class Game extends JPanel implements Runnable {
                 } else {
                     playerShip.setLives(playerShip.getLives() - 1); // Decrease lives
                     asteroid.deactivate(); // Deactivate asteroid
+
                 }
             }
 
@@ -278,16 +302,21 @@ public class Game extends JPanel implements Runnable {
         g.setColor(new Color(123, 0, 0, 230));  // Semi-transparent black background for contrast
 
         // Points of the parallelogram (define the four corners)
-        int[] xPoints = {0, 300, 400, 0}; // X coordinates of the parallelogram
+        int[] xPoints = {0, 700, 600, 0}; // X coordinates of the parallelogram
         int[] yPoints = {0, 0, 100, 100};  // Y coordinates of the parallelogram
 
         // Draw the parallelogram
         g.fillPolygon(xPoints, yPoints, 4);
 
         g.setColor(Color.WHITE);
-        g.drawString("Score: " + (int) score, 10, 50); // Score display
+        g.drawString(GUI_SCORE + (int) score, 10, 50); // Score display
 
-        g.drawString("Lives: " + playerShip.getLives(), 10, 90); // Lives display
+        g.drawString(GUI_LIVES + playerShip.getLives(), 10, 90); // Lives display
+        if(playerShip.getLives() == 1 && !this.gameOver){
+            g.setColor(Color.RED);
+            g.drawString(GUI_LAST_LIVE, WIDTH / 2 - 280, 240); // Lives display
+            g.setColor(Color.WHITE);
+        }
 
         playerShip.draw(g); // Draw player ship
 
@@ -306,22 +335,21 @@ public class Game extends JPanel implements Runnable {
         // Game over screen
         if (gameOver) {
             g.setColor(Color.RED);
-            g.drawString("Game Over!", WIDTH / 2 - 150, HEIGHT / 2 - 300); // Game over screen
-            g.drawString("Score: " + (int) score, WIDTH / 2 - 110, HEIGHT / 2 - 200); // Score
+            g.drawString(GUI_GAMEOVER, WIDTH / 2 - 150, HEIGHT / 2 - 350); // Game over screen
+            g.drawString(GUI_SCORE + (int) score, WIDTH / 2 - 170, HEIGHT / 2 - 300); // Score
             gamePaused = true;
 
             if (playerName.isEmpty()) {
                 // Ask the user to enter a name
                 g.setColor(Color.WHITE);
-                String STR_GAMEOVER_ENTER = "Enter your name (Press Enter): ";
-                g.drawString(STR_GAMEOVER_ENTER, WIDTH / 2 - 450, HEIGHT / 2);
+                g.drawString(GUI_INSERTSCORE, 160, HEIGHT / 2);
 
                 // Draw the user's input name (if they are typing)
                 g.drawString(currentInput, WIDTH / 2 - 150, HEIGHT / 2 + 50); // Show typed name
             } else {
                 // After the user has typed their name, display it along with the score
-                g.drawString("Name: " + playerName, WIDTH / 2 - 250, HEIGHT / 2);
-                g.drawString("Score: " + (int) score, WIDTH / 2 - 150, HEIGHT / 2 + 50);
+                g.drawString(GUI_NAME + playerName, WIDTH / 2 - 250, HEIGHT / 2);
+                g.drawString(GUI_SCORE + (int) score, WIDTH / 2 - 150, HEIGHT / 2 + 50);
                 // Score
                 if (!scoreSaved) {
                     Leaderboard leaderboard = new Leaderboard();
@@ -337,7 +365,7 @@ public class Game extends JPanel implements Runnable {
         if (gamePaused) {
             if(!gameOver){
                 g.setColor(Color.YELLOW);
-                g.drawString("PAUSED", WIDTH / 2 - 100, HEIGHT / 2); // Pause message
+                g.drawString(GUI_PAUSED, WIDTH / 2 - 120, HEIGHT / 2); // Pause message
             }
             showPauseMenu(); // Show the pause menu with restart/exit buttons
         }else{
@@ -345,20 +373,6 @@ public class Game extends JPanel implements Runnable {
         }
     }
 
-    // Method to handle key press for Restart or Exit
-    public void handleGameOverKeys() {
-        if (keyStates[KeyEvent.VK_R]) {
-            resetGame(); // Restart the game
-        }
-
-        if (keyStates[KeyEvent.VK_E]) {
-            Menu menu = new Menu();
-            this.setVisible(false);
-            menu.setVisible(true);
-            menu.setFocusable(true);  // Ensure this is called before the key listener
-            menu.requestFocusInWindow();  // Make sure the panel has focus
-        }
-    }
 
     private void showPauseMenu() {
         // Ensure the buttons are only shown when the game is paused
