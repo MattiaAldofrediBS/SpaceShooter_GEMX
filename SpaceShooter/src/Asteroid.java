@@ -17,6 +17,7 @@ public class Asteroid {
     private BufferedImage asteroidImage;  // Declare an Image variable
     private BufferedImage asteroidImageDeactivate;
     private double rotationAngle = 0;
+    private Game game;  // Reference to the Game instance
 
     //Costruttore
     public Asteroid(int startX, int startY) {

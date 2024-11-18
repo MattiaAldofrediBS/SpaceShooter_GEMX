@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 public class PlayerShip {
 
     public static final int MIN_BOUND = 0;
-    public static final int MAX_BOUND = 1920;
+    public static final int MAX_BOUND = Menu.SCREENSIZE_WIDTH;
     private int x;
     private int y;
     public static final int width = 150;

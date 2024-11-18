@@ -18,8 +18,10 @@ public class Game extends JPanel implements Runnable {
     private boolean gamePaused;               // Paused
     private double score;                     // Score
 
-    public static final int WIDTH = 1920;      // Width
-    public static final int HEIGHT = 1080;     // Height
+    public static final int WIDTH = Menu.SCREENSIZE_WIDTH;      // Width
+    public static final int HEIGHT = Menu.SCREENSIZE_HEIGHT;     // Height
+
+    private Thread gameLoopThread;
 
     private int movement_dx = 10;
 
@@ -57,7 +59,7 @@ public class Game extends JPanel implements Runnable {
     private final String GUI_LIVES = "Vite: ";
     private final String GUI_LAST_LIVE = "!! ULTIMA VITA !!";
     private final String GUI_GAMEOVER = "Game Over!";
-    private final String GUI_INSERTSCORE = "Inserisci il nome (Premi ENTER per confermare): ";
+    private final String GUI_INSERTSCORE = "Inserisci il nome (Premi ENTER): ";
     private final String GUI_NAME = "Nome: ";
     private final String GUI_PAUSED = "IN PAUSA";
 
@@ -342,7 +344,7 @@ public class Game extends JPanel implements Runnable {
             if (playerName.isEmpty()) {
                 // Ask the user to enter a name
                 g.setColor(Color.WHITE);
-                g.drawString(GUI_INSERTSCORE, 160, HEIGHT / 2);
+                g.drawString(GUI_INSERTSCORE, WIDTH / 2 - 360, HEIGHT / 2);
 
                 // Draw the user's input name (if they are typing)
                 g.drawString(currentInput, WIDTH / 2 - 150, HEIGHT / 2 + 50); // Show typed name
@@ -414,6 +416,7 @@ public class Game extends JPanel implements Runnable {
     }
 
     public void resetGame() {
+        // Reset game state
         playerShip = new PlayerShip(WIDTH / 2 - playerShip.width / 2, 900);
         asteroids.clear();
         bullets.clear();
@@ -424,6 +427,15 @@ public class Game extends JPanel implements Runnable {
         gamePaused = false;
         earth = new Circle(WIDTH / 2, HEIGHT); // Create circle at spaceship position
         scoreSaved = false;  // Reset the flag so the score can be saved again
+
+        // Ensure the game panel has focus after reset
+        requestFocusInWindow();
+
+        // Restart the game loop
+        if (Thread.currentThread() != gameLoopThread) {
+            gameLoopThread = new Thread(this); // Ensure a new thread is started
+            gameLoopThread.start();
+        }
     }
 
     private JButton createButton(String text, String imagePath, ActionListener action) {
@@ -452,7 +464,6 @@ public class Game extends JPanel implements Runnable {
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         return button;
     }
-
 
 class Circle {
         private int x, y; // Position of the circle
@@ -483,4 +494,5 @@ class Circle {
             g.fillOval(x - RADIUS / 4, y - RADIUS / 4, RADIUS / 2, RADIUS / 2);
         }
     }
+
 }

@@ -6,10 +6,20 @@ import java.io.File;
 public class Menu extends JFrame {
     private Game game;  // Declare a Game instance to switch to the game panel
     private Leaderboard leaderboard;
+
+    static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+    // Get the width and height of the screen
+    public static int SCREENSIZE_WIDTH = screenSize.width;
+    public static int SCREENSIZE_HEIGHT = screenSize.height;
+
+
     // Constructor for the menu
     public Menu() {
+
+
         setTitle("Game Menu");
-        setSize(1920, 1080);
+        setSize(SCREENSIZE_WIDTH, SCREENSIZE_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setUndecorated(true);  // Remove window decorations (e.g., title bar)
