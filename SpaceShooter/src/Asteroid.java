@@ -29,7 +29,7 @@ public class Asteroid {
         this.isActive = true;
 
         try {
-            this.asteroidImage = ImageIO.read(new File("images/asteroid.png"));
+            this.asteroidImage = ImageIO.read(new File("images/asteroide Xgem.png"));
             this.asteroidImageDeactivate = ImageIO.read(new File("images/explosion.png"));
         } catch (IOException ex) {
             System.out.println(ex.getMessage());

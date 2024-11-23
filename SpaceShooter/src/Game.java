@@ -53,7 +53,7 @@ public class Game extends JPanel implements Runnable {
 
     // STRINGS
     private final String BTN_RESTART = "RICOMINCIA";
-    private final String BTN_EXIT = "RITORNA AL MENU";
+    private final String BTN_EXIT = "MENU";
 
     private final String GUI_SCORE = "Punteggio: ";
     private final String GUI_LIVES = "Vite: ";
@@ -93,7 +93,7 @@ public class Game extends JPanel implements Runnable {
         // Set up restart button
         pausePanel.add(Box.createVerticalStrut(600));
         pausePanel.add(createButton(BTN_RESTART, buttonImagePath, e -> resetGame()));
-        pausePanel.add(Box.createVerticalStrut(50));
+        pausePanel.add(Box.createVerticalStrut(10));
 
         // Set up exit button
         pausePanel.add(createButton(BTN_EXIT, buttonImagePath, e -> exitFrame()));
@@ -235,10 +235,10 @@ public class Game extends JPanel implements Runnable {
         if (currentTime - lastFireTime >= fireDelay) {
             bullets.add(new Bullet(playerShip.getX() + playerShip.getWidth() / 2 - 4, playerShip.getY())); // Middle
             if (score > ADDITIONAL_BULLET_LEVEL_1) {
-                bullets.add(new Bullet(playerShip.getX() + playerShip.getWidth(), playerShip.getY() + playerShip.getHeight() / 2 - 4)); // Right
+                bullets.add(new Bullet(playerShip.getX() + playerShip.getWidth() - 15, playerShip.getY() + playerShip.getHeight() / 2 - 4)); // Right
             }
             if (score > ADDITIONAL_BULLET_LEVEL_2) {
-                bullets.add(new Bullet(playerShip.getX(), playerShip.getY() + playerShip.getHeight() / 2 - 4)); // Left
+                bullets.add(new Bullet(playerShip.getX() + 10, playerShip.getY() + playerShip.getHeight() / 2 - 4)); // Left
             }
             lastFireTime = currentTime;  // Update the last fire time
         }
@@ -442,7 +442,7 @@ public class Game extends JPanel implements Runnable {
         JButton button = new JButton(text);
 
         ImageIcon icon = new ImageIcon(imagePath);
-        Image img = icon.getImage().getScaledInstance(200, 60, Image.SCALE_SMOOTH);
+        Image img = icon.getImage().getScaledInstance(180, 40, Image.SCALE_SMOOTH);
         button.setIcon(new ImageIcon(img));
 
         button.setOpaque(false);

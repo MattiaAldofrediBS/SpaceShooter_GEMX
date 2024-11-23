@@ -35,7 +35,7 @@ public class Leaderboard extends JPanel {
         String buttonImagePath = "images/button.png";
 
         // Set up exit button
-        exitPanel.add(createButton("RITORNA AL MENU", buttonImagePath, e -> exitFrame()));
+        exitPanel.add(createButton("MENU", buttonImagePath, e -> exitFrame()));
         exitPanel.add(Box.createVerticalStrut(150));
 
         // Add the exit panel to the leaderboard panel
@@ -120,7 +120,7 @@ public class Leaderboard extends JPanel {
         JButton button = new JButton(text);
 
         ImageIcon icon = new ImageIcon(imagePath);
-        Image img = icon.getImage().getScaledInstance(200, 60, Image.SCALE_SMOOTH);
+        Image img = icon.getImage().getScaledInstance(180, 40, Image.SCALE_SMOOTH);
         button.setIcon(new ImageIcon(img));
 
         button.setOpaque(false);

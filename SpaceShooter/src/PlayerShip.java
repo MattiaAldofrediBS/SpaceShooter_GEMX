@@ -25,7 +25,7 @@ public class PlayerShip {
 
 
         try {
-            this.shipImage = ImageIO.read(new File("images/spaceship_v2.png"));
+            this.shipImage = ImageIO.read(new File("images/X-wing2.png"));
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }

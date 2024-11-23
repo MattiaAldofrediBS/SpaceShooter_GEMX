@@ -15,7 +15,7 @@ public class Bullet {
         this.x = startX;
         this.y = startY;
         this.speed = 5;
-        this.width = 10;
+        this.width = 5;
         this.height = 30;
         this.isActive = true;
     }
