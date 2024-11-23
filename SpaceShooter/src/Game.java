@@ -287,7 +287,7 @@ public class Game extends JPanel implements Runnable {
         super.paintComponent(g);
 
         try {
-            Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/PressStart2P-vaV7.ttf")).deriveFont(Font.PLAIN, 32);
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/PressStart2P-vaV7.ttf")).deriveFont(Font.PLAIN, 20);
             g.setFont(customFont);
         } catch (Exception e) {
             e.printStackTrace();
@@ -302,21 +302,15 @@ public class Game extends JPanel implements Runnable {
         setBackground(Color.BLACK); // Background
 
         g.setColor(new Color(123, 0, 0, 230));  // Semi-transparent black background for contrast
-
-        // Points of the parallelogram (define the four corners)
-        int[] xPoints = {0, 700, 600, 0}; // X coordinates of the parallelogram
-        int[] yPoints = {0, 0, 100, 100};  // Y coordinates of the parallelogram
-
-        // Draw the parallelogram
-        g.fillPolygon(xPoints, yPoints, 4);
-
         g.setColor(Color.WHITE);
         g.drawString(GUI_SCORE + (int) score, 10, 50); // Score display
-
         g.drawString(GUI_LIVES + playerShip.getLives(), 10, 90); // Lives display
+
         if(playerShip.getLives() == 1 && !this.gameOver){
             g.setColor(Color.RED);
-            g.drawString(GUI_LAST_LIVE, WIDTH / 2 - 280, 240); // Lives display
+            FontMetrics fm = g.getFontMetrics();
+            int lastliveWidth = fm.stringWidth(GUI_LAST_LIVE);
+            g.drawString(GUI_LAST_LIVE, (WIDTH - lastliveWidth) / 2, 240); // Lives display
             g.setColor(Color.WHITE);
         }
 
@@ -336,22 +330,36 @@ public class Game extends JPanel implements Runnable {
 
         // Game over screen
         if (gameOver) {
+
             g.setColor(Color.RED);
-            g.drawString(GUI_GAMEOVER, WIDTH / 2 - 150, HEIGHT / 2 - 350); // Game over screen
-            g.drawString(GUI_SCORE + (int) score, WIDTH / 2 - 170, HEIGHT / 2 - 300); // Score
+            FontMetrics fm = g.getFontMetrics();
+            int gameOverWidth = fm.stringWidth(GUI_GAMEOVER);
+            g.drawString(GUI_GAMEOVER, (WIDTH - gameOverWidth) / 2, HEIGHT / 2 - 350); // Game over screen
+
+            fm = g.getFontMetrics();
+            String scoreText = GUI_SCORE + (int) score;
+            int scoreWidth = fm.stringWidth(scoreText);
+            g.drawString(scoreText, (WIDTH - scoreWidth) / 2, HEIGHT / 2 - 300); // Score
+
             gamePaused = true;
 
             if (playerName.isEmpty()) {
                 // Ask the user to enter a name
                 g.setColor(Color.WHITE);
-                g.drawString(GUI_INSERTSCORE, WIDTH / 2 - 360, HEIGHT / 2);
+                int insertWidth = fm.stringWidth(GUI_INSERTSCORE);
+                g.drawString(GUI_INSERTSCORE, (WIDTH - insertWidth) / 2, HEIGHT / 2);
 
                 // Draw the user's input name (if they are typing)
-                g.drawString(currentInput, WIDTH / 2 - 150, HEIGHT / 2 + 50); // Show typed name
+                int inputWidth = fm.stringWidth(currentInput);
+                g.drawString(currentInput, (WIDTH - inputWidth) /2, HEIGHT / 2 + 50); // Show typed name
             } else {
                 // After the user has typed their name, display it along with the score
-                g.drawString(GUI_NAME + playerName, WIDTH / 2 - 250, HEIGHT / 2);
-                g.drawString(GUI_SCORE + (int) score, WIDTH / 2 - 150, HEIGHT / 2 + 50);
+                int playerWidth = fm.stringWidth(GUI_NAME + playerName);
+                g.drawString(GUI_NAME + playerName, (WIDTH - playerWidth) / 2, HEIGHT / 2);
+
+                int finalScoreWidth = fm.stringWidth(GUI_SCORE + (int) score);
+                g.drawString(GUI_SCORE + (int) score, (WIDTH - finalScoreWidth) / 2, HEIGHT / 2 + 50);
+
                 // Score
                 if (!scoreSaved) {
                     Leaderboard leaderboard = new Leaderboard();
@@ -367,7 +375,9 @@ public class Game extends JPanel implements Runnable {
         if (gamePaused) {
             if(!gameOver){
                 g.setColor(Color.YELLOW);
-                g.drawString(GUI_PAUSED, WIDTH / 2 - 120, HEIGHT / 2); // Pause message
+                FontMetrics fm = g.getFontMetrics();
+                int pauseWidth = fm.stringWidth(GUI_PAUSED);
+                g.drawString(GUI_PAUSED, (WIDTH - pauseWidth) / 2, HEIGHT / 2); // Pause message
             }
             showPauseMenu(); // Show the pause menu with restart/exit buttons
         }else{
@@ -494,5 +504,4 @@ class Circle {
             g.fillOval(x - RADIUS / 4, y - RADIUS / 4, RADIUS / 2, RADIUS / 2);
         }
     }
-
 }

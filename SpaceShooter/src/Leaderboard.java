@@ -89,7 +89,7 @@ public class Leaderboard extends JPanel {
 
         Font scoreFont = null;
         try {
-            scoreFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/PressStart2P-vaV7.ttf")).deriveFont(Font.PLAIN, 20);
+            scoreFont = Font.createFont(Font.TRUETYPE_FONT, new File("fonts/PressStart2P-vaV7.ttf")).deriveFont(Font.PLAIN, 14);
         } catch (Exception e) {
             e.printStackTrace();
             scoreFont = new Font("SansSerif", Font.PLAIN, 20);
